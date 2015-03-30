@@ -18,5 +18,4 @@ class Config():
     SMTP = "smtp.gmail.com"
     PORT = 587
     FROM = ''
-    SUBJECT = 'Status Report'
-    GMAIL_PWD = ''
+    PASSWD = ''

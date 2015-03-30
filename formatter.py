@@ -2,22 +2,19 @@ from config import Config
 
 
 class DataFormatter():
-    HEADERS = ['hostname', 'host_status', 'service_status', 'service_info']
+    HEADERS = ['name', 'host_status', 'service_status', 'service_info']
 
     def __init__(self, master_data):
         self._master_data = master_data
 
     def get_formatted_data(self):
-        out_arr = []
-        [
-            'prdcontr15b',
-            ['active_checks_enabled=0\n', 'notifications_enabled=0'],
-            ['active_checks_enabled 0 for 10 services\n',
-             'notifications_enabled 0 for 10 services'],
-            ['active_checks_enabled 0 for [list of services]\n',
-             'notifications_enabled 0 for [list of services]']
+        header_str = ''
+        for cell in DataFormatter.HEADERS:
+            header_str = '{0}<td style="padding:2px; border:1px solid;text-align:center;"><b>{1}</b></td>'.format(
+                header_str, cell)
 
-        ]
+        out_arr = [header_str]
+
         for hostname, host_data in self._master_data.items():
             host_active_checks_enabled = '-'
             host_notifications_enabled = '-'
@@ -40,14 +37,14 @@ class DataFormatter():
                         host_notifications_enabled = '0'
 
             row = [
-                hostname,
-                'active_checks_enabled = {0}\n notifications_enabled = {1}'.format(
+                '<b>{0}</b>'.format(hostname),
+                '<b>active_checks_enabled</b> = {0}<br/><br/> notifications_enabled = {1}'.format(
                     host_active_checks_enabled, host_notifications_enabled),
-                'active_checks_enabled 0 for {0} services\n notifications_enabled 0 for {1} services'.format(
+                '<b>active_checks_enabled 0</b> for {0} services<br/><br/> <b>notifications_enabled 0</b> for {1} services'.format(
                     len(service_active_checks_enabled_list), len(
                         service_notifications_enabled_list)
                 ),
-                'active_checks_enabled 0 for {0} services\n notifications_enabled 0 for {1} services'.format(
+                '<b>active_checks_enabled 0 </b>for [{0}] services<br/><br/> <b>notifications_enabled 0 </b>for {1} services'.format(
                     ', '.join(service_active_checks_enabled_list), ', '.join(
                         service_notifications_enabled_list)
                 )
@@ -55,10 +52,11 @@ class DataFormatter():
             ]
             row_str = ''
             for cell in row:
-                row_str = '{0}<td>{1}</td>'.format(row_str, cell)
+                row_str = '{0}<td style = "padding: 2px;border: 1px solid;text-align: center;">{1}</td>'.format(
+                    row_str, cell)
 
             out_arr.append(row_str)
-        table = '<table>'
+        table = '<table >'
         for row in out_arr:
             table = '{0}<tr>{1}</tr>'.format(table, row)
         table = table + '</table>'
