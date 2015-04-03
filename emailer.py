@@ -11,11 +11,11 @@ class Emailer():
     def __init__(self):
         pass
 
-    def send_email(self, subject, text, to_list):
+    def send_email(self, subject, text):
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
         msg['From'] = Config.FROM
-        msg['To'] = ", ".join(to_list)
+        msg['To'] = ", ".join(Config.TO_LIST)
         part = MIMEText(text, 'html')
         msg.attach(part)
         try:
@@ -23,7 +23,7 @@ class Emailer():
             server.ehlo()
             server.starttls()
             server.login(Config.FROM, Config.PASSWD)
-            server.sendmail(Config.FROM, to_list, msg.as_string())
+            server.sendmail(Config.FROM, Config.TO_LIST, msg.as_string())
             server.close()
             print 'successfully sent the mail'
         except Exception, e:

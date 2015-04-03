@@ -15,7 +15,25 @@ class Config():
     HEADER_KEY = 'host_name'
 
     # Email configuration
-    SMTP = "smtp.gmail.com"
+    SMTP = 'smtp.gmail.com'
     PORT = 587
     FROM = ''
     PASSWD = ''
+    TO_LIST = [
+        'ankit.singh@imaginea.com',
+        'adithya.p@imaginea.com',
+        'raghava.kumar@imaginea.com',
+        'sibaprasad.mahapatra@imaginea.com',
+        'raghava.kumar@imaginea.com'
+    ]
+
+    # Formatter configuration
+    REPORT_HEADER = ['name', 'host_status', 'service_status', 'service_info']
+    MAIL_HEADING = 'Icinga Host & Service Status Report'
+    MAX_SERVICE_COUNT = {
+        'prdcontrapp': 13,
+        'prdcontrdb': 12,
+        'prdcontr': 18
+    }
+    SERVICE_COUNT_THRESHOLD = 5
+    DEFAULT_SERIVCE_MESSAGE = 'Some Message'
