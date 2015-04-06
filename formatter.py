@@ -36,49 +36,87 @@ class DataFormatter():
             cmp_key2 += 1
         return cmp(cmp_key1, cmp_key2)
 
-    def _get_service_msg(self, check_list, for_active=True):
-        check_length = len(check_list)
-        if for_active:
-            if check_length:
-                return 'active check disabled : {0}'.format(check_length)
-            else:
-                return ''
-        else:
-            if check_length:
-                return 'notification disabled : {0} services'.format(len(check_list))
-            else:
-                return ''
+    def _get_service_msg(self, active_check_list, notification_check_list):
+        msg = ['', '']
+        one_set = False
 
-    def _get_detailed_service_msg(self, service_list, max_serivce_count):
-        service_list_len = len(service_list)
-        if service_list_len == 0:
-            return ''
-        if service_list_len == max_serivce_count:
-            return 'ALL'
-        elif service_list_len < Config.SERVICE_COUNT_THRESHOLD:
-            return ','.join(service_list)
-        return Config.DEFAULT_SERIVCE_MESSAGE
+        active_length = len(active_check_list)
+        notif_length = len(notification_check_list)
 
-    def _get_host_msg(self, check_flag, for_active=True):
-        if for_active:
-            if check_flag == '0':
-                return 'active check disabled'
+        if active_length:
+            msg[0] = 'active check disabled : {0}<br/><br/>'.format(
+                active_length)
+            one_set = True
+        if notif_length:
+            msg[1] = 'notification disabled : {0} services'.format(
+                notif_length)
+            one_set = True
+        if not one_set:
+            msg = ['NA', '']
+        return '{0}{1}'.format(msg[0], msg[1])
+
+    def _get_detailed_service_msg(self, active_service_list, notif_service_list,
+                                  max_serivce_count):
+
+        msg = ['', '']
+        one_set = False
+
+        active_length = len(active_service_list)
+        notif_length = len(notif_service_list)
+
+        if active_length:
+            one_set = True
+            if active_length == max_serivce_count:
+                msg[0] = 'ALL'
+            elif active_length < Config.SERVICE_COUNT_THRESHOLD:
+                msg[0] = ','.join(active_service_list)
             else:
-                return ''
-        else:
-            if check_flag == '0':
-                return 'notification check disabled'
+                msg[0] = Config.DEFAULT_SERIVCE_MESSAGE
+            msg[0] += '<br/><br/>'
+
+        if notif_length:
+            one_set = True
+            if notif_length == max_serivce_count:
+                msg[1] = 'ALL'
+            elif notif_length < Config.SERVICE_COUNT_THRESHOLD:
+                msg[1] = ','.join(notif_service_list)
             else:
-                return 'NA'
+                msg[1] = Config.DEFAULT_SERIVCE_MESSAGE
+
+        if not one_set:
+            msg = ['NA', '']
+        return '{0}{1}'.format(msg[0], msg[1])
+
+    def _get_host_msg(self, active_check, notification_check):
+        msg = ['', '']
+        one_set = False
+        if active_check == '0':
+            msg[0] = 'active check disabled<br/><br/>'
+            one_set = True
+        if notification_check == '0':
+            msg[1] = 'notification check disabled'
+            one_set = True
+        if not one_set:
+            msg = ['NA', '']
+        return '{0}{1}'.format(msg[0], msg[1])
 
     def get_formatted_data(self):
+        sorted_hostnames = sorted(self._master_data, cmp=self._sort_func)
+        if sorted_hostnames:
+            report_div = self._format_data(sorted_hostnames)
+        else:
+            report_div = '<div><p><b>{0}</b></p>{1}</div>'.format(
+                Config.MAIL_HEADING, Config.EMPTY_REPORT_MESSAGE)
+        return report_div
+
+    def _format_data(self, sorted_hostnames):
         header_str = ''
         for cell in Config.REPORT_HEADER:
-            header_str = '{0}<td style="padding:2px; border:1px solid;text-align:center;"><b>{1}</b></td>'.format(
+            header_str = '{0}<td style="padding:10px; border:1px solid;text-align:center;"><b>{1}</b></td>'.format(
                 header_str, cell)
 
         out_arr = [header_str]
-        sorted_hostnames = sorted(self._master_data, cmp=self._sort_func)
+
         for hostname in sorted_hostnames:
             max_serivce_count = Config.MAX_SERVICE_COUNT[
                 self._key_func(hostname)[0]]
@@ -102,26 +140,17 @@ class DataFormatter():
                     host_notifications_enabled = data['notifications_enabled']
 
             row = [
-                '<b>{0}</b>'.format(hostname),
-                '<b>{0}<br/><br/>{1}'.format(
-                    self._get_host_msg(host_active_checks_enabled),
-                    self._get_host_msg(host_notifications_enabled, False)),
-                '<b>{0}<br/><br/>{1}'.format(
-                    self._get_service_msg(service_active_checks_enabled_list),
-                    self._get_service_msg(
-                        service_notifications_enabled_list, False)
-                ),
-                '{0}<br/><br/>{1}'.format(
-                    self._get_detailed_service_msg(
-                        service_active_checks_enabled_list, max_serivce_count),
-                    self._get_detailed_service_msg(
-                        service_notifications_enabled_list, max_serivce_count)
-                )
-
+                '{0}'.format(hostname),
+                self._get_host_msg(
+                    host_active_checks_enabled, host_notifications_enabled),
+                self._get_service_msg(
+                    service_active_checks_enabled_list, service_notifications_enabled_list),
+                self._get_detailed_service_msg(
+                    service_active_checks_enabled_list, service_notifications_enabled_list, max_serivce_count),
             ]
             row_str = ''
             for cell in row:
-                row_str = '{0}<td style = "padding: 2px;border: 1px solid;text-align: center;">{1}</td>'.format(
+                row_str = '{0}<td style = "padding: 10px;border: 1px solid;text-align: center;">{1}</td>'.format(
                     row_str, cell)
 
             out_arr.append(row_str)

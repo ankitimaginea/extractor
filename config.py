@@ -25,13 +25,13 @@ class Config():
     TO_LIST = [
         'ankit.singh@imaginea.com',
         # 'adithya.p@imaginea.com',
-        # 'raghava.kumar@imaginea.com',
+        'raghava.kumar@imaginea.com',
         # 'sibaprasad.mahapatra@imaginea.com',
         # 'raghava.kumar@imaginea.com'
     ]
     # if USE_LOCALHOST is true, it will send using gmail , we need to configure smtp and port
     # accordingly
-    USE_LOCALHOST = False
+    USE_LOCALHOST = True
 
     # Formatter configuration
     REPORT_HEADER = ['name', 'host_status', 'service_status', 'service_info']
@@ -43,3 +43,5 @@ class Config():
     }
     SERVICE_COUNT_THRESHOLD = 5
     DEFAULT_SERIVCE_MESSAGE = 'Some Message'
+
+    EMPTY_REPORT_MESSAGE = 'No data to show'

@@ -11,14 +11,14 @@ class Emailer():
     def __init__(self):
         pass
 
-    def send_mail(self, subject, text, is_gmail=False):
+    def send_mail(self, subject, text, is_localhost=False):
         msg = self._compose_mail(subject, text)
-        if is_gmail:
-            self._send_email_via_gmail(self, msg)
+        if is_localhost:
+            self._send_email_via_localhost(msg)
         else:
-            self._send_email_via_localhost(self, msg):
+            self._send_email_via_gmail(msg)
 
-    def _compose_mail(subject, text):
+    def _compose_mail(self, subject, text):
         msg = MIMEMultipart('alternative')
         msg['Subject'] = subject
         msg['From'] = Config.FROM
