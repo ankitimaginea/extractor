@@ -7,7 +7,6 @@ class DataFormatter():
 
     def __init__(self, master_data):
         self._master_data = master_data
-        self._cache = {}
 
     @memoized
     def _key_func(self, line):

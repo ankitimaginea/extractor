@@ -15,17 +15,23 @@ class Config():
     HEADER_KEY = 'host_name'
 
     # Email configuration
-    SMTP = 'smtp.gmail.com'
-    PORT = 587
+    SMTP_GMAIL = 'smtp.gmail.com'  # for gmail
+    PORT_GMAIL = 587
     FROM = ''
     PASSWD = ''
+
+    SMTP = 'localhost'
+
     TO_LIST = [
         'ankit.singh@imaginea.com',
-        'adithya.p@imaginea.com',
-        'raghava.kumar@imaginea.com',
-        'sibaprasad.mahapatra@imaginea.com',
-        'raghava.kumar@imaginea.com'
+        # 'adithya.p@imaginea.com',
+        # 'raghava.kumar@imaginea.com',
+        # 'sibaprasad.mahapatra@imaginea.com',
+        # 'raghava.kumar@imaginea.com'
     ]
+    # if USE_LOCALHOST is true, it will send using gmail , we need to configure smtp and port
+    # accordingly
+    USE_LOCALHOST = False
 
     # Formatter configuration
     REPORT_HEADER = ['name', 'host_status', 'service_status', 'service_info']
