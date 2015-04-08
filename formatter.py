@@ -1,5 +1,5 @@
 from config import Config
-from cache_decorator import memoized
+from decorator_utils import memoized
 import re
 
 
@@ -71,7 +71,8 @@ class DataFormatter():
             elif active_length < Config.SERVICE_COUNT_THRESHOLD:
                 msg[0] = ','.join(active_service_list)
             else:
-                msg[0] = Config.DEFAULT_SERIVCE_MESSAGE
+                msg[0] = '<a href="{0}">{1}</a>'.format(
+                    Config.SERVICE_MESSAGE_LINK, Config.DEFAULT_SERIVCE_MESSAGE)
             msg[0] += '<br/><br/>'
 
         if notif_length:
@@ -81,8 +82,8 @@ class DataFormatter():
             elif notif_length < Config.SERVICE_COUNT_THRESHOLD:
                 msg[1] = ','.join(notif_service_list)
             else:
-                msg[1] = Config.DEFAULT_SERIVCE_MESSAGE
-
+                msg[1] = '<a href="{0}">{1}</a>'.format(
+                    Config.SERVICE_MESSAGE_LINK, Config.DEFAULT_SERIVCE_MESSAGE)
         if not one_set:
             msg = ['NA', '']
         return '{0}{1}'.format(msg[0], msg[1])

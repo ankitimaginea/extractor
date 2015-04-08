@@ -32,3 +32,13 @@ class memoized(object):
     def __get__(self, obj, objtype):
         '''Support instance methods.'''
         return functools.partial(self.__call__, obj)
+
+
+class classproperty(property):
+
+    '''
+    Decorator. Dynamically set class variable value
+    '''
+
+    def __get__(self, cls, owner):
+        return classmethod(self.fget).__get__(None, owner)()
