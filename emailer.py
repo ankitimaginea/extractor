@@ -23,7 +23,9 @@ class Emailer():
         msg['Subject'] = subject
         msg['From'] = Config.FROM
         msg['To'] = ", ".join(Config.TO_LIST)
-        part = MIMEText(text, 'html')
+        msg['MIME-Version'] = '1.0'
+        msg['Content-type'] = 'text/html'
+        part = MIMEText(text.encode('utf-8'), 'html', 'utf-8')
         msg.attach(part)
         return msg
 

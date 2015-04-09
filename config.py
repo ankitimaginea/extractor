@@ -37,7 +37,7 @@ class Config():
     ]
     # if USE_LOCALHOST is true, it will send using gmail , we need to configure smtp and port
     # accordingly
-    USE_LOCALHOST = False
+    USE_LOCALHOST = True
 
     @classproperty
     def MAIL_SUB(cls):
