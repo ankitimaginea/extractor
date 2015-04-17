@@ -44,7 +44,7 @@ class DataFormatter():
         notif_length = len(notification_check_list)
 
         if active_length:
-            msg[0] = 'active check disabled : {0}<br/><br/>'.format(
+            msg[0] = 'active check disabled : {0}'.format(
                 active_length)
             one_set = True
         if notif_length:
@@ -53,7 +53,7 @@ class DataFormatter():
             one_set = True
         if not one_set:
             msg = ['NA', '']
-        return '{0}{1}'.format(msg[0], msg[1])
+        return '{0} {1}'.format(msg[0], msg[1])
 
     def _get_detailed_service_msg(self, active_service_list, notif_service_list,
                                   max_serivce_count):
@@ -69,54 +69,72 @@ class DataFormatter():
             if active_length == max_serivce_count:
                 msg[0] = 'ALL'
             elif active_length < Config.SERVICE_COUNT_THRESHOLD:
-                msg[0] = ','.join(active_service_list)
+                msg[0] = ', '.join(active_service_list)
             else:
                 msg[0] = '<a href="{0}">{1}</a>'.format(
                     Config.SERVICE_MESSAGE_LINK, Config.DEFAULT_SERIVCE_MESSAGE)
-            msg[0] += '<br/><br/>'
 
         if notif_length:
             one_set = True
             if notif_length == max_serivce_count:
                 msg[1] = 'ALL'
             elif notif_length < Config.SERVICE_COUNT_THRESHOLD:
-                msg[1] = ','.join(notif_service_list)
+                msg[1] = ', '.join(notif_service_list)
             else:
                 msg[1] = '<a href="{0}">{1}</a>'.format(
                     Config.SERVICE_MESSAGE_LINK, Config.DEFAULT_SERIVCE_MESSAGE)
         if not one_set:
             msg = ['NA', '']
-        return '{0}{1}'.format(msg[0], msg[1])
+        return '{0} {1}'.format(msg[0], msg[1])
 
     def _get_host_msg(self, active_check, notification_check):
         msg = ['', '']
         one_set = False
         if active_check == '0':
-            msg[0] = 'active check disabled<br/><br/>'
+            msg[0] = 'active check disabled'
             one_set = True
         if notification_check == '0':
             msg[1] = 'notification check disabled'
             one_set = True
         if not one_set:
             msg = ['NA', '']
-        return '{0}{1}'.format(msg[0], msg[1])
+        return '{0} {1}'.format(msg[0], msg[1])
 
     def get_formatted_data(self):
         sorted_hostnames = sorted(self._master_data, cmp=self._sort_func)
         if sorted_hostnames:
-            report_div = self._format_data(sorted_hostnames)
+            formatted_rows = self._format_data(sorted_hostnames)
         else:
-            report_div = '<div><p><b>{0}</b></p>{1}</div>'.format(
-                Config.MAIL_HEADING, Config.EMPTY_REPORT_MESSAGE)
-        return report_div
+            formatted_rows = ['<div><p><b>{0}</b></p>{1}</div>'.format(
+                Config.MAIL_HEADING, Config.EMPTY_REPORT_MESSAGE)]
+        return formatted_rows
 
-    def _format_data(self, sorted_hostnames):
+    def create_report(self):
+        formatted_rows = self.get_formatted_data()
         header_str = ''
-        for cell in Config.REPORT_HEADER:
+        for cell in formatted_rows.pop(0):
             header_str = '{0}<td style="padding:10px; border:1px solid;text-align:center;"><b>{1}</b></td>'.format(
                 header_str, cell)
 
         out_arr = [header_str]
+        for row in formatted_rows:
+            row_str = ''
+            for cell in row:
+                row_str = '{0}<td style = "padding: 10px;border: 1px solid;text-align: center;">{1}</td>'.format(
+                    row_str, cell)
+
+            out_arr.append(row_str)
+
+        table = '<table  border="1" cellpadding="2" cellspacing="0" width="100%" >'
+        for row in out_arr:
+            table = '{0}<tr>{1}</tr>'.format(table, row)
+        table = table + '</table>'
+        report_div = '<div><p><b>{0}</b></p>{1}</div>'.format(
+            Config.MAIL_HEADING, table)
+        return report_div
+
+    def _format_data(self, sorted_hostnames):
+        formatted_rows = [Config.REPORT_HEADER[:]]
 
         for hostname in sorted_hostnames:
             max_serivce_count = Config.MAX_SERVICE_COUNT[
@@ -149,16 +167,5 @@ class DataFormatter():
                 self._get_detailed_service_msg(
                     service_active_checks_enabled_list, service_notifications_enabled_list, max_serivce_count),
             ]
-            row_str = ''
-            for cell in row:
-                row_str = '{0}<td style = "padding: 10px;border: 1px solid;text-align: center;">{1}</td>'.format(
-                    row_str, cell)
-
-            out_arr.append(row_str)
-        table = '<table  border="1" cellpadding="2" cellspacing="0" width="100%" >'
-        for row in out_arr:
-            table = '{0}<tr>{1}</tr>'.format(table, row)
-        table = table + '</table>'
-        report_div = '<div><p><b>{0}</b></p>{1}</div>'.format(
-            Config.MAIL_HEADING, table)
-        return report_div
+            formatted_rows.append(row)
+        return formatted_rows

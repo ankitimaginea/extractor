@@ -1,8 +1,7 @@
 import json
 import subprocess
+import os
 from config import Config
-from emailer import Emailer
-from formatter import DataFormatter
 
 
 class Parser():
@@ -18,7 +17,9 @@ class Parser():
         return lines
 
     def _get_file_lines_local(self):
-        f = open('data/status.dat')
+        abs_dir = os.path.dirname(__file__)
+        source_file_name = os.path.join(abs_dir, 'data/status.dat')
+        f = open(source_file_name)
         return [line for line in f.readlines()]
 
     def parse(self):
@@ -88,19 +89,3 @@ class Parser():
                     pass
             and_result = and_result and or_result
         return and_result
-
-    def _group_by_key(self, json_array):
-        for data_obj in json_array:
-            for title, json_obj in data_obj.items():
-                print title, json_obj
-        Config.GROUP_BY_KEY
-
-
-if __name__ == '__main__':
-    parser = Parser()
-    master_data = parser.parse()
-    data_formatter = DataFormatter(master_data)
-    message = data_formatter.get_formatted_data()
-    emailer = Emailer()
-    emailer.send_mail(
-        Config.MAIL_SUB, message, Config.USE_LOCALHOST)
